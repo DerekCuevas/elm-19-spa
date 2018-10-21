@@ -1,51 +1,21 @@
-port module Main exposing (Model, Msg(..), init, main, update, view)
+module Main exposing (main)
 
 import Browser
-import Browser.Navigation as Nav
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
-import Http exposing (Error(..))
-import Json.Decode as Decode
-
-
-type alias Config =
-    { api : String
-    }
-
-
-type alias Model =
-    {}
-
-
-init : Config -> ( Model, Cmd Msg )
-init config =
-    ( {}, Cmd.none )
-
-
-type Msg
-    = NoOp
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update message model =
-    ( model, Cmd.none )
-
-
-view : Model -> Html Msg
-view model =
-    div [] [ text "Hello" ]
+import Config exposing (Config)
+import Main.Model exposing (Model, init)
+import Main.Msg exposing (Msg(..))
+import Main.Subscriptions exposing (subscriptions)
+import Main.Update exposing (update)
+import Main.View exposing (view)
 
 
 main : Program Config Model Msg
 main =
-    Browser.document
+    Browser.application
         { init = init
         , update = update
-        , view =
-            \m ->
-                { title = "Elm 0.19 starter"
-                , body = [ view m ]
-                }
-        , subscriptions = always Sub.none
+        , view = view
+        , subscriptions = subscriptions
+        , onUrlRequest = UrlRequest
+        , onUrlChange = UrlChange
         }
