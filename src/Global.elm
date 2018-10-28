@@ -6,6 +6,7 @@ module Global exposing
     , getTime
     , init
     , none
+    , update
     )
 
 import Browser.Navigation exposing (Key)
@@ -62,8 +63,8 @@ none =
     NoOp
 
 
-update : Global -> Msg -> ( Global, Cmd Msg )
-update global msg =
+update : Msg -> Global -> ( Global, Cmd Msg )
+update msg global =
     ( global, Cmd.none )
 
 
