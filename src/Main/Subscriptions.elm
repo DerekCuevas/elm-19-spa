@@ -1,8 +1,7 @@
 module Main.Subscriptions exposing (subscriptions)
 
-import Main.Model exposing (Model)
+import Main.Model exposing (Model, Page(..))
 import Main.Msg exposing (Msg(..))
-import Main.Page exposing (Page(..))
 import Page.Detail
 import Page.Index
 

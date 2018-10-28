@@ -3,9 +3,8 @@ module Main.Update exposing (update)
 import Browser
 import Browser.Navigation as BN
 import Global
-import Main.Model exposing (Model, initPage, updatePage)
+import Main.Model exposing (Model, Page(..), initPage, updatePage)
 import Main.Msg exposing (Msg(..))
-import Main.Page exposing (Page(..))
 import Page.Detail
 import Page.Index
 import Url

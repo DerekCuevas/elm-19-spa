@@ -2,9 +2,8 @@ module Main.View exposing (view)
 
 import Browser exposing (Document)
 import Html exposing (..)
-import Main.Model exposing (Model)
+import Main.Model exposing (Model, Page(..))
 import Main.Msg exposing (Msg(..))
-import Main.Page exposing (Page(..))
 import Page.Detail
 import Page.Index
 
@@ -15,7 +14,7 @@ view model =
         viewPage toMsg pageModel pageView =
             let
                 { title, body } =
-                    pageView pageModel
+                    pageView model.global pageModel
             in
             { title = title
             , body = List.map (Html.map toMsg) body

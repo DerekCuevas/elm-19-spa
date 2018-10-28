@@ -10,6 +10,7 @@ module Page.Index exposing
 import Browser exposing (Document)
 import Global exposing (Global)
 import Html exposing (..)
+import Route
 
 
 
@@ -51,8 +52,8 @@ subscriptions global model =
 -- VIEW
 
 
-view : Model -> Document Msg
-view model =
+view : Global -> Model -> Document Msg
+view global model =
     { title = "Index"
     , body = [ text "index page" ]
     }

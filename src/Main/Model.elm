@@ -1,5 +1,6 @@
 module Main.Model exposing
     ( Model
+    , Page(..)
     , init
     , initPage
     , updatePage
@@ -9,11 +10,16 @@ import Browser.Navigation exposing (Key)
 import Config exposing (Config)
 import Global exposing (Global)
 import Main.Msg exposing (Msg(..))
-import Main.Page exposing (Page(..))
 import Page.Detail
 import Page.Index
 import Route
 import Url exposing (Url)
+
+
+type Page
+    = Index Page.Index.Model
+    | Detail Page.Detail.Model
+    | NotFound
 
 
 type alias Model =

@@ -1,12 +1,15 @@
 module Route exposing
     ( Route(..)
     , fromUrl
+    , href
     , newUrl
     , parser
     , toString
     )
 
 import Browser.Navigation as BN exposing (Key)
+import Html exposing (Attribute)
+import Html.Attributes
 import Url exposing (Url)
 import Url.Builder as UB
 import Url.Parser as UP exposing ((</>), Parser)
@@ -43,3 +46,8 @@ newUrl key =
 fromUrl : Url -> Maybe Route
 fromUrl url =
     UP.parse parser url
+
+
+href : Route -> Attribute msg
+href route =
+    Html.Attributes.href <| toString route

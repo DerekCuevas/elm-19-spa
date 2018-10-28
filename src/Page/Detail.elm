@@ -52,8 +52,8 @@ subscriptions global model =
 -- VIEW
 
 
-view : Model -> Document Msg
-view model =
+view : Global -> Model -> Document Msg
+view global model =
     { title = "Detail - " ++ model.id
     , body = [ text <| "detail: " ++ model.id ]
     }
