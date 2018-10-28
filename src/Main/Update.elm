@@ -25,7 +25,7 @@ updatePage toPage toMsg model ( pageModel, pageCmd, globalMsg ) =
     ( { model | page = toPage pageModel, global = global }
     , Cmd.batch
         [ Cmd.map toMsg pageCmd
-        , Cmd.map GlobalMsg global
+        , Cmd.map GlobalMsg globalCmd
         ]
     )
 
