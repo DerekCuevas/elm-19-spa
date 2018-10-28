@@ -8,9 +8,24 @@ module Page.Index exposing
     )
 
 import Browser exposing (Document)
+import Config exposing (Config)
+import Data.User exposing (User)
 import Global exposing (Global)
 import Html exposing (..)
+import RemoteData as RD exposing (RemoteData(..), WebData)
+import Request.User
 import Route
+
+
+
+-- COMMANDS
+
+
+getUsers : Config -> Cmd Msg
+getUsers config =
+    Request.User.getUsers config
+        |> RD.sendRequest
+        |> Cmd.map GetUsersResponse
 
 
 
@@ -18,12 +33,16 @@ import Route
 
 
 type alias Model =
-    {}
+    { users : WebData (List User)
+    }
 
 
 init : Global -> ( Model, Cmd Msg, Global.Msg )
 init global =
-    ( {}, Cmd.none, Global.none )
+    ( { users = Loading }
+    , getUsers <| Global.getConfig global
+    , Global.none
+    )
 
 
 
@@ -31,12 +50,14 @@ init global =
 
 
 type Msg
-    = NoOp
+    = GetUsersResponse (WebData (List User))
 
 
 update : Global -> Msg -> Model -> ( Model, Cmd Msg, Global.Msg )
-update global msg model =
-    ( model, Cmd.none, Global.none )
+update _ msg model =
+    case msg of
+        GetUsersResponse response ->
+            ( { model | users = response }, Cmd.none, Global.none )
 
 
 
@@ -44,7 +65,7 @@ update global msg model =
 
 
 subscriptions : Global -> Model -> Sub Msg
-subscriptions global model =
+subscriptions _ _ =
     Sub.none
 
 
@@ -53,13 +74,37 @@ subscriptions global model =
 
 
 view : Global -> Model -> Document Msg
-view global model =
+view _ model =
     { title = "Home"
     , body =
-        [ h1 [] [ text "Index page" ]
-        , ul []
-            [ li [] [ a [ Route.href <| Route.Detail { id = "foo" } ] [ text "Foo" ] ]
-            , li [] [ a [ Route.href <| Route.Detail { id = "bar" } ] [ text "Bar" ] ]
-            ]
+        [ h1 [] [ text "Users" ]
+        , viewUsers model
         ]
     }
+
+
+viewUsers : Model -> Html Msg
+viewUsers model =
+    case model.users of
+        NotAsked ->
+            text "Not Asked."
+
+        Loading ->
+            text "Loading..."
+
+        Failure error ->
+            text "Error"
+
+        Success [] ->
+            text "No users found."
+
+        Success users ->
+            ul [] <| List.map viewUser users
+
+
+viewUser : User -> Html Msg
+viewUser user =
+    li []
+        [ a [ Route.href <| Route.Detail { id = user.username } ]
+            [ text user.username ]
+        ]
