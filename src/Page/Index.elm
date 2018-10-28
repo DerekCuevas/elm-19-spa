@@ -42,8 +42,8 @@ update global msg model =
 -- SUBSCRIPTIONS
 
 
-subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions : Global -> Model -> Sub Msg
+subscriptions global model =
     Sub.none
 
 

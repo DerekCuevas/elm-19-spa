@@ -2,7 +2,7 @@ module Global exposing
     ( Global
     , Msg
     , getConfig
-    , getNavigationKey
+    , getKey
     , getTime
     , init
     , none
@@ -91,6 +91,6 @@ getTime =
     toModel >> .time
 
 
-getNavigationKey : Global -> Key
-getNavigationKey =
+getKey : Global -> Key
+getKey =
     toModel >> .key

@@ -1,7 +1,13 @@
-module Route exposing (Route(..), parser)
+module Route exposing
+    ( Route(..)
+    , fromUrl
+    , newUrl
+    , parser
+    , toString
+    )
 
 import Browser.Navigation as BN exposing (Key)
-import Url
+import Url exposing (Url)
 import Url.Builder as UB
 import Url.Parser as UP exposing ((</>), Parser)
 
@@ -32,3 +38,8 @@ toString route =
 newUrl : Key -> Route -> Cmd msg
 newUrl key =
     toString >> BN.pushUrl key
+
+
+fromUrl : Url -> Maybe Route
+fromUrl url =
+    UP.parse parser url

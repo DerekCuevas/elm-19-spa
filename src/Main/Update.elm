@@ -3,31 +3,12 @@ module Main.Update exposing (update)
 import Browser
 import Browser.Navigation as BN
 import Global
-import Main.Model exposing (Model)
+import Main.Model exposing (Model, initPage, updatePage)
 import Main.Msg exposing (Msg(..))
 import Main.Page exposing (Page(..))
 import Page.Detail
 import Page.Index
 import Url
-
-
-updatePage :
-    (pageModel -> Page)
-    -> (pageMsg -> Msg)
-    -> Model
-    -> ( pageModel, Cmd pageMsg, Global.Msg )
-    -> ( Model, Cmd Msg )
-updatePage toPage toMsg model ( pageModel, pageCmd, globalMsg ) =
-    let
-        ( global, globalCmd ) =
-            Global.update globalMsg model.global
-    in
-    ( { model | page = toPage pageModel, global = global }
-    , Cmd.batch
-        [ Cmd.map toMsg pageCmd
-        , Cmd.map GlobalMsg globalCmd
-        ]
-    )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -37,7 +18,7 @@ update msg model =
             case urlRequest of
                 Browser.Internal url ->
                     ( model
-                    , BN.pushUrl (Global.getNavigationKey model.global) (Url.toString url)
+                    , BN.pushUrl (Global.getKey model.global) (Url.toString url)
                     )
 
                 Browser.External href ->
@@ -45,8 +26,8 @@ update msg model =
                     , BN.load href
                     )
 
-        ( UrlChange urlChange, _ ) ->
-            ( model, Cmd.none )
+        ( UrlChange url, _ ) ->
+            initPage url model
 
         ( IndexMsg imsg, Index indexModel ) ->
             Page.Index.update model.global imsg indexModel

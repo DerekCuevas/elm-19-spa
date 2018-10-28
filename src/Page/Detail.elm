@@ -17,12 +17,13 @@ import Html exposing (..)
 
 
 type alias Model =
-    {}
+    { id : String
+    }
 
 
-init : Global -> ( Model, Cmd Msg, Global.Msg )
-init global =
-    ( {}, Cmd.none, Global.none )
+init : Global -> String -> ( Model, Cmd Msg, Global.Msg )
+init global id =
+    ( { id = id }, Cmd.none, Global.none )
 
 
 
@@ -42,8 +43,8 @@ update global msg model =
 -- SUBSCRIPTIONS
 
 
-subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions : Global -> Model -> Sub Msg
+subscriptions global model =
     Sub.none
 
 
@@ -53,6 +54,6 @@ subscriptions model =
 
 view : Model -> Document Msg
 view model =
-    { title = "Detail"
-    , body = [ text "detail page" ]
+    { title = "Detail - " ++ model.id
+    , body = [ text <| "detail: " ++ model.id ]
     }
