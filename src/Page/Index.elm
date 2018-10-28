@@ -54,6 +54,12 @@ subscriptions global model =
 
 view : Global -> Model -> Document Msg
 view global model =
-    { title = "Index"
-    , body = [ text "index page" ]
+    { title = "Home"
+    , body =
+        [ h1 [] [ text "Index page" ]
+        , ul []
+            [ li [] [ a [ Route.href <| Route.Detail { id = "foo" } ] [ text "Foo" ] ]
+            , li [] [ a [ Route.href <| Route.Detail { id = "bar" } ] [ text "Bar" ] ]
+            ]
+        ]
     }

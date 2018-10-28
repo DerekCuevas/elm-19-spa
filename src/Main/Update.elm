@@ -28,6 +28,11 @@ update msg model =
         ( UrlChange url, _ ) ->
             initPage url model
 
+        ( GlobalMsg gmsg, _ ) ->
+            Global.update gmsg model.global
+                |> Tuple.mapFirst (\global -> { model | global = global })
+                |> Tuple.mapSecond (Cmd.map GlobalMsg)
+
         ( IndexMsg imsg, Index indexModel ) ->
             Page.Index.update model.global imsg indexModel
                 |> updatePage Index IndexMsg model

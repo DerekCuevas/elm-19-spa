@@ -11,6 +11,7 @@ module Global exposing
 
 import Browser.Navigation exposing (Key)
 import Config exposing (Config)
+import Task
 import Time exposing (Posix)
 
 
@@ -36,7 +37,7 @@ init config key =
         , time = Time.millisToPosix 0
         , key = key
         }
-    , Cmd.none
+    , Task.perform SetTime Time.now
     )
 
 
@@ -55,7 +56,8 @@ toGlobal model =
 
 
 type Msg
-    = NoOp
+    = SetTime Posix
+    | NoOp
 
 
 none : Msg
@@ -64,8 +66,17 @@ none =
 
 
 update : Msg -> Global -> ( Global, Cmd Msg )
-update msg global =
-    ( global, Cmd.none )
+update msg (Global model) =
+    let
+        set nextModel =
+            ( toGlobal nextModel, Cmd.none )
+    in
+    case msg of
+        SetTime time ->
+            set { model | time = time }
+
+        NoOp ->
+            set model
 
 
 
