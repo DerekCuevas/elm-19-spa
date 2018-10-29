@@ -10,7 +10,8 @@ import Url.Builder as UB
 
 getUser : Config -> String -> Request User
 getUser config username =
-    HB.get (UB.crossOrigin config.api [ "users", username ] [])
+    UB.crossOrigin config.api [ "users", username ] []
+        |> HB.get
         |> HB.withExpect (Http.expectJson User.userDecoder)
         |> HB.toRequest
 
@@ -21,6 +22,7 @@ getUsers config =
         decoder =
             JD.list User.userDecoder
     in
-    HB.get (UB.crossOrigin config.api [ "users" ] [])
+    UB.crossOrigin config.api [ "users" ] []
+        |> HB.get
         |> HB.withExpect (Http.expectJson decoder)
         |> HB.toRequest

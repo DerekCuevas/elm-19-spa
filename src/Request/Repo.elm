@@ -14,6 +14,7 @@ getRepos config username =
         decoder =
             JD.list Repo.repoDecoder
     in
-    HB.get (UB.crossOrigin config.api [ "users", username, "repos" ] [])
+    UB.crossOrigin config.api [ "users", username, "repos" ] []
+        |> HB.get
         |> HB.withExpect (Http.expectJson decoder)
         |> HB.toRequest
