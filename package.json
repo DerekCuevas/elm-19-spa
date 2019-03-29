@@ -7,7 +7,8 @@
     "dev": "webpack-dev-server --hot --colors --port 3000",
     "build": "webpack",
     "prod": "webpack -p",
-    "config": "cp ./config.sample.json ./src/config.json"
+    "config": "cp ./config.sample.json ./src/config.json",
+    "clean": "rm -rf node_modules elm-stuff"
   },
   "license": "MIT",
   "devDependencies": {

@@ -7,10 +7,12 @@ module Page.Detail exposing
     , view
     )
 
+import Data.User exposing (User, UserId)
 import Extra.Html.Styled exposing (Document)
 import Global exposing (Global)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
+import RemoteData as RD exposing (WebData)
 import Route
 
 
@@ -19,13 +21,16 @@ import Route
 
 
 type alias Model =
-    { id : String
+    { userId : UserId
     }
 
 
-init : Global -> String -> ( Model, Cmd Msg, Global.Msg )
-init global id =
-    ( { id = id }, Cmd.none, Global.none )
+init : Global -> UserId -> ( Model, Cmd Msg, Global.Msg )
+init global userId =
+    ( { userId = userId }
+    , Cmd.none
+    , Global.none
+    )
 
 
 
@@ -51,14 +56,46 @@ subscriptions global model =
 
 
 
+-- RESOURCES --
+
+
+type alias Resources =
+    { user : User
+    }
+
+
+getResources : Global -> Model -> WebData Resources
+getResources global model =
+    Resources
+        |> RD.succeed
+        |> RD.andMap (Global.getUserForId global model.userId)
+
+
+
 -- VIEW
 
 
 view : Global -> Model -> Document Msg
 view global model =
-    { title = "Detail - " ++ model.id
-    , body =
-        [ h1 [] [ text <| "Detail: " ++ model.id ]
-        , a [ Route.href Route.Index ] [ text "Home" ]
-        ]
+    let
+        resourcesWebData =
+            getResources global model
+
+        title =
+            resourcesWebData
+                |> RD.map (.user >> .username)
+                |> RD.withDefault "Loading user..."
+    in
+    { title = title
+    , body = [ viewPage resourcesWebData ]
     }
+
+
+viewPage : WebData Resources -> Html Msg
+viewPage resourcesWebData =
+    Extra.Html.Styled.viewWebData resourcesWebData <|
+        \resources ->
+            div []
+                [ h1 [] [ text <| "Detail: " ++ resources.user.username ]
+                , a [ Route.href Route.Index ] [ text "Home" ]
+                ]

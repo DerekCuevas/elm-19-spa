@@ -8,6 +8,7 @@ module Route exposing
     )
 
 import Browser.Navigation as BN exposing (Key)
+import Data.User exposing (UserId)
 import Html.Styled exposing (Attribute)
 import Html.Styled.Attributes
 import Url exposing (Url)
@@ -17,14 +18,14 @@ import Url.Parser as UP exposing ((</>), Parser)
 
 type Route
     = Index
-    | Detail { id : String }
+    | Detail { userId : UserId }
 
 
 parser : Parser (Route -> a) a
 parser =
     UP.oneOf
         [ UP.map Index <| UP.top
-        , UP.map (\id -> Detail { id = id }) <| UP.s "detail" </> UP.string
+        , UP.map (\userId -> Detail { userId = userId }) <| UP.s "detail" </> UP.string
         ]
 
 
@@ -34,8 +35,8 @@ toString route =
         Index ->
             UB.absolute [] []
 
-        Detail { id } ->
-            UB.absolute [ "detail", id ] []
+        Detail { userId } ->
+            UB.absolute [ "detail", userId ] []
 
 
 newUrl : Key -> Route -> Cmd msg

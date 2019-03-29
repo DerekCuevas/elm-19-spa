@@ -82,8 +82,8 @@ initPage url model =
             Page.Index.init model.global
                 |> updatePage Index IndexMsg model
 
-        Just (Route.Detail { id }) ->
-            Page.Detail.init model.global id
+        Just (Route.Detail { userId }) ->
+            Page.Detail.init model.global userId
                 |> updatePage Detail DetailMsg model
 
         Nothing ->

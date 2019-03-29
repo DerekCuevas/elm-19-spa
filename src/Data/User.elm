@@ -1,11 +1,11 @@
-module Data.User exposing (User, userDecoder)
+module Data.User exposing (User, UserId, userDecoder)
 
 import Json.Decode as JD exposing (Decoder)
 import Json.Decode.Pipeline as JDP
 
 
 type alias UserId =
-    Int
+    String
 
 
 type alias User =
@@ -18,6 +18,6 @@ type alias User =
 userDecoder : Decoder User
 userDecoder =
     JD.succeed User
-        |> JDP.required "id" JD.int
+        |> JDP.required "id" (JD.map String.fromInt JD.int)
         |> JDP.required "login" JD.string
         |> JDP.required "url" JD.string

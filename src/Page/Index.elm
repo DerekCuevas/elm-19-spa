@@ -114,6 +114,6 @@ userStyle =
 viewUser : User -> Html Msg
 viewUser user =
     li [ css [ userStyle ] ]
-        [ a [ Route.href <| Route.Detail { id = user.username } ]
+        [ a [ Route.href <| Route.Detail { userId = user.id } ]
             [ text user.username ]
         ]

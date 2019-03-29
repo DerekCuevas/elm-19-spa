@@ -1,9 +1,11 @@
 module Global exposing
     ( Global
     , Msg
+    , batch
     , getConfig
     , getKey
     , getTime
+    , getUserForId
     , getUsers
     , init
     , none
@@ -13,7 +15,8 @@ module Global exposing
 
 import Browser.Navigation exposing (Key)
 import Config exposing (Config)
-import Data.User exposing (User)
+import Data.User exposing (User, UserId)
+import List.Extra
 import RemoteData as RD exposing (RemoteData(..), WebData)
 import Request.User
 import Task
@@ -79,12 +82,30 @@ toGlobal model =
 type Msg
     = SetTime Posix
     | GetUsersResponse (WebData (List User))
+    | Batch (List Msg)
     | NoOp
 
 
 none : Msg
 none =
     NoOp
+
+
+batch : List Msg -> Msg
+batch =
+    Batch
+
+
+updateBatch : Model -> List Msg -> ( Global, Cmd Msg )
+updateBatch model msgs =
+    Tuple.mapSecond Cmd.batch <|
+        List.foldl
+            (\msg ( global, cmds ) ->
+                update msg global
+                    |> Tuple.mapSecond (\cmd -> cmd :: cmds)
+            )
+            ( toGlobal model, [] )
+            msgs
 
 
 update : Msg -> Global -> ( Global, Cmd Msg )
@@ -99,6 +120,9 @@ update msg (Global model) =
 
         GetUsersResponse response ->
             set { model | users = response }
+
+        Batch msgs ->
+            updateBatch model msgs
 
         NoOp ->
             set model
@@ -135,3 +159,16 @@ getKey =
 getUsers : Global -> WebData (List User)
 getUsers =
     toModel >> .users
+
+
+getUserForId : Global -> UserId -> WebData User
+getUserForId global userId =
+    global
+        |> getUsers
+        |> RD.andThen
+            (\users ->
+                users
+                    |> List.Extra.find (\user -> user.id == userId)
+                    |> Maybe.map RD.succeed
+                    |> Maybe.withDefault NotAsked
+            )
