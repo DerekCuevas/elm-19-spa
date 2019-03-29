@@ -20,29 +20,17 @@ import Route
 
 
 
--- COMMANDS
-
-
-getUsers : Config -> Cmd Msg
-getUsers config =
-    Request.User.getUsers config
-        |> RD.sendRequest
-        |> Cmd.map GetUsersResponse
-
-
-
 -- MODEL
 
 
 type alias Model =
-    { users : WebData (List User)
-    }
+    {}
 
 
 init : Global -> ( Model, Cmd Msg, Global.Msg )
 init global =
-    ( { users = Loading }
-    , getUsers <| Global.getConfig global
+    ( {}
+    , Cmd.none
     , Global.none
     )
 
@@ -52,14 +40,14 @@ init global =
 
 
 type Msg
-    = GetUsersResponse (WebData (List User))
+    = NoOp
 
 
 update : Global -> Msg -> Model -> ( Model, Cmd Msg, Global.Msg )
 update _ msg model =
     case msg of
-        GetUsersResponse response ->
-            ( { model | users = response }, Cmd.none, Global.none )
+        NoOp ->
+            ( model, Cmd.none, Global.none )
 
 
 
@@ -72,37 +60,45 @@ subscriptions _ _ =
 
 
 
+-- RESOURCES --
+
+
+type alias Resources =
+    { users : List User
+    }
+
+
+getResources : Global -> Model -> WebData Resources
+getResources global model =
+    RD.succeed Resources
+        |> RD.andMap (Global.getUsers global)
+
+
+
 -- VIEW
 
 
 view : Global -> Model -> Document Msg
-view _ model =
+view global model =
     { title = "Home"
-    , body =
-        [ h1 [] [ text "Users" ]
-        , viewUsers model
-        ]
+    , body = [ viewPage global model ]
     }
 
 
-viewUsers : Model -> Html Msg
-viewUsers model =
-    case model.users of
-        NotAsked ->
-            text "Not Asked."
+viewPage : Global -> Model -> Html Msg
+viewPage global model =
+    Extra.Html.Styled.viewWebData (getResources global model) <|
+        \resources ->
+            div []
+                [ h1 [] [ text "Users" ]
+                , viewUsers resources.users
+                ]
 
-        Loading ->
-            text "Loading..."
 
-        Failure error ->
-            text "Error"
-
-        Success [] ->
-            text "No users found."
-
-        Success users ->
-            ul [ css [ margin (px 0), padding (px 0) ] ] <|
-                List.map viewUser users
+viewUsers : List User -> Html Msg
+viewUsers users =
+    ul [ css [ margin (px 0), padding (px 0) ] ] <|
+        List.map viewUser users
 
 
 userStyle : Style

@@ -107,6 +107,7 @@ if (MODE === "development") {
     },
     devServer: {
       inline: true,
+      overlay: true,
       stats: "errors-only",
       contentBase: path.join(__dirname, "src/assets"),
       historyApiFallback: true,

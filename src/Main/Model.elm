@@ -48,21 +48,8 @@ init config url key =
     )
 
 
-initPage : Url -> Model -> ( Model, Cmd Msg )
-initPage url model =
-    case Route.fromUrl url of
-        Just Route.Index ->
-            Page.Index.init model.global
-                |> updatePage Index IndexMsg model
 
-        Just (Route.Detail { id }) ->
-            Page.Detail.init model.global id
-                |> updatePage Detail DetailMsg model
-
-        Nothing ->
-            ( { model | page = NotFound }
-            , Cmd.none
-            )
+-- GENERIC UPDATE PAGE --
 
 
 updatePage :
@@ -82,3 +69,24 @@ updatePage toPage toMsg model ( pageModel, pageCmd, globalMsg ) =
         , Cmd.map GlobalMsg globalCmd
         ]
     )
+
+
+
+-- INIT PAGE --
+
+
+initPage : Url -> Model -> ( Model, Cmd Msg )
+initPage url model =
+    case Route.fromUrl url of
+        Just Route.Index ->
+            Page.Index.init model.global
+                |> updatePage Index IndexMsg model
+
+        Just (Route.Detail { id }) ->
+            Page.Detail.init model.global id
+                |> updatePage Detail DetailMsg model
+
+        Nothing ->
+            ( { model | page = NotFound }
+            , Cmd.none
+            )

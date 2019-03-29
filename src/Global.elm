@@ -4,6 +4,7 @@ module Global exposing
     , getConfig
     , getKey
     , getTime
+    , getUsers
     , init
     , none
     , subscriptions
@@ -12,8 +13,22 @@ module Global exposing
 
 import Browser.Navigation exposing (Key)
 import Config exposing (Config)
+import Data.User exposing (User)
+import RemoteData as RD exposing (RemoteData(..), WebData)
+import Request.User
 import Task
 import Time exposing (Posix)
+
+
+
+-- COMMANDS --
+
+
+getUsersCmd : Config -> Cmd Msg
+getUsersCmd config =
+    Request.User.getUsers config
+        |> RD.sendRequest
+        |> Cmd.map GetUsersResponse
 
 
 
@@ -24,6 +39,7 @@ type alias Model =
     { config : Config
     , time : Posix
     , key : Key
+    , users : WebData (List User)
     }
 
 
@@ -37,8 +53,12 @@ init config key =
         { config = config
         , time = Time.millisToPosix 0
         , key = key
+        , users = Loading
         }
-    , Task.perform SetTime Time.now
+    , Cmd.batch
+        [ Task.perform SetTime Time.now
+        , getUsersCmd config
+        ]
     )
 
 
@@ -58,6 +78,7 @@ toGlobal model =
 
 type Msg
     = SetTime Posix
+    | GetUsersResponse (WebData (List User))
     | NoOp
 
 
@@ -75,6 +96,9 @@ update msg (Global model) =
     case msg of
         SetTime time ->
             set { model | time = time }
+
+        GetUsersResponse response ->
+            set { model | users = response }
 
         NoOp ->
             set model
@@ -106,3 +130,8 @@ getTime =
 getKey : Global -> Key
 getKey =
     toModel >> .key
+
+
+getUsers : Global -> WebData (List User)
+getUsers =
+    toModel >> .users
