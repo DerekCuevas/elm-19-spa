@@ -7,13 +7,27 @@ module Page.Detail exposing
     , view
     )
 
+import Config exposing (Config)
+import Data.Repo exposing (Repo)
 import Data.User exposing (User, UserId)
 import Extra.Html.Styled exposing (Document)
 import Global exposing (Global)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
-import RemoteData as RD exposing (WebData)
+import RemoteData as RD exposing (RemoteData(..), WebData)
+import Request.Repo
 import Route
+
+
+
+-- COMMANDS --
+
+
+getRepos : Config -> UserId -> Cmd Msg
+getRepos config userId =
+    Request.Repo.getRepos config userId
+        |> RD.sendRequest
+        |> Cmd.map GetReposResponse
 
 
 
@@ -22,13 +36,14 @@ import Route
 
 type alias Model =
     { userId : UserId
+    , repos : WebData (List Repo)
     }
 
 
 init : Global -> UserId -> ( Model, Cmd Msg, Global.Msg )
 init global userId =
-    ( { userId = userId }
-    , Cmd.none
+    ( { userId = userId, repos = Loading }
+    , getRepos (Global.getConfig global) userId
     , Global.none
     )
 
@@ -38,12 +53,18 @@ init global userId =
 
 
 type Msg
-    = NoOp
+    = GetReposResponse (WebData (List Repo))
 
 
 update : Global -> Msg -> Model -> ( Model, Cmd Msg, Global.Msg )
 update global msg model =
-    ( model, Cmd.none, Global.none )
+    let
+        set updatedModel =
+            ( updatedModel, Cmd.none, Global.none )
+    in
+    case msg of
+        GetReposResponse response ->
+            set { model | repos = response }
 
 
 
@@ -61,6 +82,7 @@ subscriptions global model =
 
 type alias Resources =
     { user : User
+    , repos : List Repo
     }
 
 
@@ -69,6 +91,7 @@ getResources global model =
     Resources
         |> RD.succeed
         |> RD.andMap (Global.getUserForId global model.userId)
+        |> RD.andMap model.repos
 
 
 
@@ -96,6 +119,12 @@ viewPage resourcesWebData =
     Extra.Html.Styled.viewWebData resourcesWebData <|
         \resources ->
             div []
-                [ h1 [] [ text <| "Detail: " ++ resources.user.username ]
+                [ h1 [] [ text <| "Repos for user: " ++ resources.user.username ]
+                , viewRepos resources.repos
                 , a [ Route.href Route.Index ] [ text "Home" ]
                 ]
+
+
+viewRepos : List Repo -> Html Msg
+viewRepos repos =
+    ul [] <| List.map (\repo -> li [] [ text repo.name ]) repos

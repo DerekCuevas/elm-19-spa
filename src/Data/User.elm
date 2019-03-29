@@ -18,6 +18,6 @@ type alias User =
 userDecoder : Decoder User
 userDecoder =
     JD.succeed User
-        |> JDP.required "id" (JD.map String.fromInt JD.int)
+        |> JDP.required "login" JD.string
         |> JDP.required "login" JD.string
         |> JDP.required "url" JD.string
