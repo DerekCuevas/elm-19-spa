@@ -20,40 +20,28 @@ import Route
 
 
 
--- COMMANDS --
-
-
-getRepos : Config -> UserId -> Cmd Msg
-getRepos config userId =
-    Request.Repo.getRepos config userId
-        |> RD.sendRequest
-        |> Cmd.map GetReposResponse
-
-
-
--- MODEL
+-- MODEL --
 
 
 type alias Model =
     { userId : UserId
-    , repos : WebData (List Repo)
     }
 
 
 init : Global -> UserId -> ( Model, Cmd Msg, Global.Msg )
 init global userId =
-    ( { userId = userId, repos = Loading }
-    , getRepos (Global.getConfig global) userId
-    , Global.none
+    ( { userId = userId }
+    , Cmd.none
+    , Global.getRepos userId
     )
 
 
 
--- UPDATE
+-- UPDATE --
 
 
 type Msg
-    = GetReposResponse (WebData (List Repo))
+    = NoOp
 
 
 update : Global -> Msg -> Model -> ( Model, Cmd Msg, Global.Msg )
@@ -63,12 +51,12 @@ update global msg model =
             ( updatedModel, Cmd.none, Global.none )
     in
     case msg of
-        GetReposResponse response ->
-            set { model | repos = response }
+        NoOp ->
+            set model
 
 
 
--- SUBSCRIPTIONS
+-- SUBSCRIPTIONS --
 
 
 subscriptions : Global -> Model -> Sub Msg
@@ -91,11 +79,11 @@ getResources global model =
     Resources
         |> RD.succeed
         |> RD.andMap (Global.getUserForId global model.userId)
-        |> RD.andMap model.repos
+        |> RD.andMap (Global.getReposForUserId global model.userId)
 
 
 
--- VIEW
+-- VIEW --
 
 
 view : Global -> Model -> Document Msg
