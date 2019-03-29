@@ -7,9 +7,10 @@ module Page.Detail exposing
     , view
     )
 
-import Browser exposing (Document)
+import Extra.Html.Styled exposing (Document)
 import Global exposing (Global)
-import Html exposing (..)
+import Html.Styled exposing (..)
+import Html.Styled.Attributes exposing (..)
 import Route
 
 

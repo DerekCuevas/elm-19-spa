@@ -8,8 +8,8 @@ module Route exposing
     )
 
 import Browser.Navigation as BN exposing (Key)
-import Html exposing (Attribute)
-import Html.Attributes
+import Html.Styled exposing (Attribute)
+import Html.Styled.Attributes
 import Url exposing (Url)
 import Url.Builder as UB
 import Url.Parser as UP exposing ((</>), Parser)
@@ -50,4 +50,4 @@ fromUrl url =
 
 href : Route -> Attribute msg
 href route =
-    Html.Attributes.href <| toString route
+    Html.Styled.Attributes.href <| toString route

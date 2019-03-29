@@ -1,7 +1,9 @@
 module Main.View exposing (view)
 
 import Browser exposing (Document)
+import Extra.Html.Styled
 import Html exposing (..)
+import Html.Styled
 import Main.Model exposing (Model, Page(..))
 import Main.Msg exposing (Msg(..))
 import Page.Detail
@@ -16,9 +18,10 @@ view model =
                 { title, body } =
                     pageView model.global pageModel
             in
-            { title = title
-            , body = List.map (Html.map toMsg) body
-            }
+            Extra.Html.Styled.toUnstyledDocument
+                { title = title
+                , body = List.map (Html.Styled.map toMsg) body
+                }
     in
     case model.page of
         Index indexModel ->

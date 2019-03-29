@@ -7,11 +7,13 @@ module Page.Index exposing
     , view
     )
 
-import Browser exposing (Document)
 import Config exposing (Config)
+import Css exposing (..)
 import Data.User exposing (User)
+import Extra.Html.Styled exposing (Document)
 import Global exposing (Global)
-import Html exposing (..)
+import Html.Styled exposing (..)
+import Html.Styled.Attributes exposing (..)
 import RemoteData as RD exposing (RemoteData(..), WebData)
 import Request.User
 import Route
@@ -99,12 +101,23 @@ viewUsers model =
             text "No users found."
 
         Success users ->
-            ul [] <| List.map viewUser users
+            ul [ css [ margin (px 0), padding (px 0) ] ] <|
+                List.map viewUser users
+
+
+userStyle : Style
+userStyle =
+    batch
+        [ padding (px 10)
+        , backgroundColor <| hex "#eee"
+        , listStyle none
+        , marginBottom (px 5)
+        ]
 
 
 viewUser : User -> Html Msg
 viewUser user =
-    li []
+    li [ css [ userStyle ] ]
         [ a [ Route.href <| Route.Detail { id = user.username } ]
             [ text user.username ]
         ]
