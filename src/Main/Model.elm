@@ -76,7 +76,7 @@ updatePage toPage toMsg model ( pageModel, pageCmd, globalMsg ) =
 -- ROUTE MIDDLEWARES --
 
 
-routeLoggerMiddleware : Middleware (Maybe Route) Model Msg
+routeLoggerMiddleware : Middleware (Maybe Route) Model
 routeLoggerMiddleware route model =
     let
         _ =
@@ -85,10 +85,10 @@ routeLoggerMiddleware route model =
                 |> Maybe.withDefault "Not Found"
                 |> Debug.log "route"
     in
-    ( route, Cmd.none )
+    route
 
 
-routeMiddleware : List (Middleware (Maybe Route) Model Msg)
+routeMiddleware : List (Middleware (Maybe Route) Model)
 routeMiddleware =
     [ routeLoggerMiddleware
     ]
@@ -108,7 +108,6 @@ urlToRoute url model =
             Main.Middleware.combineMiddleware routeMiddleware
     in
     middleware routeFromUrl model
-        |> Tuple.first
 
 
 initPage : Url -> Model -> ( Model, Cmd Msg )
